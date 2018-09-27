@@ -7,42 +7,7 @@ var App = function() {
 	this.categoryName = Observable();
 	this.cards = Observable();
 	this.lists = Observable();
-	var listsData = [];
-	var files = ["Animals"];
-	var _g = 0;
-	while(_g < files.length) {
-		var file = files[_g];
-		++_g;
-		var data = Bundle.readSync("data/" + file + ".csv");
-		if(data != null) {
-			var lines = data.split("\n");
-			var cards = [];
-			var id = 0;
-			var _g1 = 0;
-			while(_g1 < lines.length) {
-				var values = lines[_g1++].split(",");
-				var script = values[2];
-				var scripts = [];
-				var b = false;
-				var _g3 = 0;
-				var _g2 = script.length;
-				while(_g3 < _g2) {
-					var c = script.charAt(_g3++);
-					if(c == "!") {
-						b = true;
-					} else {
-						scripts.push({ c : c, b : b});
-						if(b) {
-							b = false;
-						}
-					}
-				}
-				cards.push({ id : id++, kanji : values[0], word : values[1], scripts : scripts, translation : values[3]});
-			}
-			listsData.push({ name : file, cards : cards, count : lines.length});
-		}
-	}
-	this.lists.addAll(listsData);
+	Bundle.list().then($bind(this,this.initList));
 	this.listSelected = $bind(this,this.listSelected);
 	this.pageChanged = $bind(this,this.pageChanged);
 	this.cardChanged = $bind(this,this.cardChanged);
@@ -53,7 +18,49 @@ App.main = function() {
 	module.exports = new App();
 };
 App.prototype = {
-	listSelected: function(e) {
+	initList: function(files) {
+		var _gthis = this;
+		var _g = 0;
+		while(_g < files.length) {
+			var file = [files[_g]];
+			++_g;
+			if(HxOverrides.substr(file[0],-3,null) == "csv") {
+				Bundle.read(file[0]).then((function(file1) {
+					return function(data) {
+						if(data != null) {
+							var lines = data.split("\n");
+							var cards = [];
+							var id = 0;
+							var _g1 = 0;
+							while(_g1 < lines.length) {
+								var values = lines[_g1++].split(",");
+								var script = values[2];
+								var scripts = [];
+								var b = false;
+								var _g3 = 0;
+								var _g2 = script.length;
+								while(_g3 < _g2) {
+									var c = script.charAt(_g3++);
+									if(c == "!") {
+										b = true;
+									} else {
+										scripts.push({ c : c, b : b});
+										if(b) {
+											b = false;
+										}
+									}
+								}
+								cards.push({ id : id++, kanji : values[0], word : values[1], scripts : scripts, translation : values[3]});
+							}
+							_gthis.lists.add({ name : HxOverrides.substr(HxOverrides.substr(file1[0],0,-4),file1[0].lastIndexOf("/") + 1,null), cards : cards, count : lines.length});
+						}
+						return;
+					};
+				})(file));
+			}
+		}
+	}
+	,listSelected: function(e) {
 		if(this.cards.length > 0) {
 			this.cards.clear();
 		}
@@ -73,7 +80,7 @@ App.prototype = {
 			var index = this.currentPage.value + 1;
 			if(index < this.cardsData.length && index >= this.cards.length) {
 				this.cards.add(this.cardsData[index]);
-				console.log("src/App.hx:77:","add " + index);
+				console.log("src/App.hx:73:","add " + index);
 			}
 		}
 	}
@@ -85,6 +92,19 @@ App.prototype = {
 };
 var Bundle = require("FuseJS/Bundle");
 var Fuse = function() { };
+var HxOverrides = function() { };
+HxOverrides.substr = function(s,pos,len) {
+	if(len == null) {
+		len = s.length;
+	} else if(len < 0) {
+		if(pos == 0) {
+			len = s.length + len;
+		} else {
+			return "";
+		}
+	}
+	return s.substr(pos,len);
+};
 var Observable = require("FuseJS/Observable");
 var $_, $fid = 0;
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = m.bind(o); o.hx__closures__[m.__id__] = f; } return f; }

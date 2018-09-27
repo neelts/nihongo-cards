@@ -1,5 +1,6 @@
 package ;
 
+import haxe.Timer;
 import Fuse.Event;
 import haxe.Json;
 import Observable.E;
@@ -21,39 +22,34 @@ class App implements UXExport {
 	private var cardsData:Array<Card>;
 
 	public function new() {
+		Bundle.list().then(initList);
+	}
 
-		var listsData = [];
-		var files = ['Animals'];
-
-		for (file in files) {
-			var data = 'data/${file}.csv'.readSync();
-			if (data != null) {
-				var lines = data.split('\n');
-				var cards:Array<Card> = [];
-				var id = 0;
-				for (line in lines) {
-					var values = line.split(',');
-					var script = values[2];
-					var scripts = [];
-					var b = false;
-					for (i in 0...script.length) {
-						var c = script.charAt(i);
-						if (c == '!') b = true else {
-							scripts.push({ c:c, b:b });
-							if (b) b = false;
+	private function initList(files:Array<String>) {
+		for (file in files) if (file.substr(-3) == 'csv') {
+			file.read().then((data) -> {
+				if (data != null) {
+					var lines = data.split('\n');
+					var cards:Array<Card> = [];
+					var id = 0;
+					for (line in lines) {
+						var values = line.split(',');
+						var script = values[2];
+						var scripts = [];
+						var b = false;
+						for (i in 0...script.length) {
+							var c = script.charAt(i);
+							if (c == '!') b = true else {
+								scripts.push({ c:c, b:b });
+								if (b) b = false;
+							}
 						}
+						cards.push({ id:id++, kanji: values[0], word: values[1], scripts: scripts, translation: values[3] });
 					}
-					cards.push({ id:id++, kanji: values[0], word: values[1], scripts: scripts, translation: values[3] });
+					lists.add({ name: file.substr(0, -4).substr(file.lastIndexOf('/') + 1), cards: cards, count: lines.length });
 				}
-				listsData.push({
-					name: file,
-					cards: cards,
-					count: lines.length
-				});
-			}
-		}
-
-		lists.addAll(listsData);
+			});
+		};
 	}
 
 	public function listSelected(e:Event<List>) {

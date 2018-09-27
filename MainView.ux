@@ -26,7 +26,7 @@
         <DropShadow />
     </DockPanel>
 
-    <Panel ux:Class="Category" Height="60">
+    <Panel ux:Class="Category" Height="60" Margin="0, 0, 0, 0">
         <string ux:Property="Text" />
         <int ux:Property="Count" />
         <Grid Padding="16, 0, 0, 0" Columns="1*,1,80">
@@ -51,20 +51,22 @@
         <DockPanel>
 
             <PageControl ux:Name="Pages" IsRouterOutlet="false" Interaction="None" Navigated="{pageChanged}">
-                <StackPanel Color="#D9DCDD" ux:Name="List">
-                    <Header Text="Категории" />
-                    <StackPanel Padding="8" ItemSpacing="8">
-                        <Each Items="{Read lists}">
-                            <Category Text="{name}" Count="{count}">
-                                <Clicked>
-                                    <Callback Handler="{listSelected}" />
-                                    <Set Pages.Active="Card" Delay=".1" />
-                                </Clicked>
-                            </Category>
-                        </Each>
-                        <Shadow Size="12" Distance="2" Spread="0.005" />
-                    </StackPanel>
-                </StackPanel>
+                <DockPanel Color="#D9DCDD" ux:Name="List">
+                    <Header Text="Categories" />
+                    <ScrollView Padding="8">
+                        <StackPanel ItemSpacing="8">
+                            <Each Items="{Read lists}">
+                                <Category Text="{name}" Count="{count}">
+                                    <Clicked>
+                                        <Callback Handler="{listSelected}" />
+                                        <Set Pages.Active="Card" Delay=".1" />
+                                    </Clicked>
+                                </Category>
+                            </Each>
+                            <Shadow Size="12" Distance="2" Spread="0.005" />
+                        </StackPanel>
+                    </ScrollView>
+                </DockPanel>
                 <DockPanel Color="#D9DCDD" ux:Name="Card">
                     <Header Text="{categoryName}" Buttons="true">
                         <DockPanel>
@@ -75,7 +77,7 @@
                             </IconButton>
                             <IconButton Alignment="CenterRight" Icon="" Visibility="{ReadProperty Cards.ActiveIndex} &gt; 0 ? Visible : Hidden">
                                 <Clicked>
-                                    <Callback Handler="{resetCards}"/>
+                                    <Callback Handler="{resetCards}" />
                                 </Clicked>
                             </IconButton>
                         </DockPanel>
@@ -89,7 +91,7 @@
                                     <Text Value="{word}" Alignment="Center" Font="RegularFont" FontSize="40" Margin="0, 62, 0, 0" Color="#303030" />
                                     <StackPanel Orientation="Horizontal" ContentAlignment="HorizontalCenter">
                                         <Each Items="{scripts}">
-                                            <C Char="{c}" Bold="{b}"/>
+                                            <C Char="{c}" Bold="{b}" />
                                         </Each>
                                     </StackPanel>
                                     <Text Value="{translation}" Alignment="Center" Font="BoldFont" FontSize="24" Color="#606060" Margin="0, 40, 0, 0" />
