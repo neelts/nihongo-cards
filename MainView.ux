@@ -20,7 +20,7 @@
     <DockPanel ux:Class="Header" Dock="Top" Height="56" Padding="0, 0" Color="#6C8DAC">
         <bool ux:Property="Buttons" />
         <string ux:Property="Text" />
-        <Text ux:Name="Header" Value="{ReadProperty Text}" Margin="{ReadProperty Buttons} ? 72 : 16,0,0,0" Alignment="CenterLeft" Font="RegularUIFont" FontSize="20" TextColor="#fff" />
+        <Text ux:Name="Header" Value="{ReadProperty Text}" Margin="{ReadProperty Buttons} ? 72 : 16,0,0,0" Alignment="CenterLeft" FontSize="20" TextColor="#fff" />
         <DropShadow />
     </DockPanel>
 
@@ -48,19 +48,15 @@
 
         <DockPanel>
 
-            <PageControl ux:Name="Pages" IsRouterOutlet="false" Interaction="None">
+            <PageControl ux:Name="Pages" IsRouterOutlet="false" Interaction="None" Navigated="{pageChanged}">
                 <StackPanel Color="#D9DCDD" ux:Name="List">
-                    <WhileActive>
-                        <Set Cards.ActiveIndex="0" />
-                        <Callback Handler="{clearCards}" />
-                    </WhileActive>
                     <Header Text="Категории" />
                     <StackPanel Padding="8" ItemSpacing="8">
                         <Each Items="{Read lists}">
                             <Category Text="{name}" Count="{count}">
                                 <Clicked>
                                     <Callback Handler="{listSelected}" />
-                                    <Set Pages.Active="Card" />
+                                    <Set Pages.Active="Card" Delay=".1" />
                                 </Clicked>
                             </Category>
                         </Each>
@@ -77,15 +73,15 @@
                             </IconButton>
                             <IconButton Alignment="CenterRight" Icon="" Visibility="{ReadProperty Cards.ActiveIndex} &gt; 0 ? Visible : Hidden">
                                 <Clicked>
-                                    <Set Cards.ActiveIndex="0" />
+                                    <Callback Handler="{resetCards}"/>
                                 </Clicked>
                             </IconButton>
                         </DockPanel>
                     </Header>
-                    <PageControl ux:Name="Cards" Padding="8" InactiveState="Collapsed">
-                        <NavigationMotion GotoType="SmoothSnap" GotoDuration=".1" />
+                    <PageControl ux:Name="Cards" Padding="8" InactiveState="Collapsed" Navigated="{cardChanged}" ActiveIndex="{currentPage}" Reuse="Inactive">
+                        <NavigationMotion GotoType="SmoothSnap" GotoDuration=".1" GotoDistance="1" />
                         <Each Items="{Read cards}">
-                            <Page>
+                            <Page Name="{id}">
                                 <StackPanel Alignment="Center">
                                     <Text Value="{kanji}" Alignment="Center" Font="RegularFont" FontSize="52" Color="#303030" />
                                     <Text Value="{word}" Alignment="Center" Font="RegularFont" FontSize="40" Margin="0, 62, 0, 0" Color="#303030" />

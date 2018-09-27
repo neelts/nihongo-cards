@@ -3,6 +3,7 @@
 var $hxEnums = {};
 var UXExport = function() { };
 var App = function() {
+	this.currentPage = Observable(0);
 	this.categoryName = Observable();
 	this.cards = Observable();
 	this.lists = Observable();
@@ -16,27 +17,36 @@ var App = function() {
 		if(data != null) {
 			var lines = data.split("\n");
 			var cards = [];
+			var id = 0;
 			var _g1 = 0;
 			while(_g1 < lines.length) {
 				var values = lines[_g1++].split(",");
 				var script = values[2];
 				var scripts = [];
+				var b = false;
 				var _g3 = 0;
 				var _g2 = script.length;
 				while(_g3 < _g2) {
 					var c = script.charAt(_g3++);
-					if(c != "!") {
-						scripts.push({ c : c, b : false});
+					if(c == "!") {
+						b = true;
+					} else {
+						scripts.push({ c : c, b : b});
+						if(b) {
+							b = false;
+						}
 					}
 				}
-				cards.push({ kanji : values[0], word : values[1], scripts : scripts, translation : values[3]});
+				cards.push({ id : id++, kanji : values[0], word : values[1], scripts : scripts, translation : values[3]});
 			}
 			listsData.push({ name : file, cards : cards, count : lines.length});
 		}
 	}
 	this.lists.addAll(listsData);
 	this.listSelected = $bind(this,this.listSelected);
-	this.clearCards = $bind(this,this.clearCards);
+	this.pageChanged = $bind(this,this.pageChanged);
+	this.cardChanged = $bind(this,this.cardChanged);
+	this.resetCards = $bind(this,this.resetCards);
 };
 App.__interfaces__ = [UXExport];
 App.main = function() {
@@ -44,12 +54,33 @@ App.main = function() {
 };
 App.prototype = {
 	listSelected: function(e) {
+		if(this.cards.length > 0) {
+			this.cards.clear();
+		}
 		var card = e.data;
 		this.categoryName.value = card.name;
-		this.cards.addAll(card.cards);
+		this.cardsData = card.cards;
+		this.cards.add(this.cardsData[0]);
+		this.currentPage.value = 0;
 	}
-	,clearCards: function(e) {
+	,pageChanged: function(p) {
+		if(p.name == "List") {
+			this.cards.clear();
+		}
+	}
+	,cardChanged: function(p) {
+		if(this.cardsData != null) {
+			var index = this.currentPage.value + 1;
+			if(index < this.cardsData.length && index >= this.cards.length) {
+				this.cards.add(this.cardsData[index]);
+				console.log("src/App.hx:77:","add " + index);
+			}
+		}
+	}
+	,resetCards: function(_) {
 		this.cards.clear();
+		this.cards.add(this.cardsData[0]);
+		this.currentPage.value = 0;
 	}
 };
 var Bundle = require("FuseJS/Bundle");

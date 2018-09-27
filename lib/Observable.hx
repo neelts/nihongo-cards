@@ -11,8 +11,10 @@ extern class Observable<T> {
 	
 	public function getAt(index:Int):T;
 	public function add(value:T):Void;
+	public function insertAt(index:Int, value:T):Void;
 	public function addAll(value:Array<T>):Void;
 	public function remove(value:T):Void;
+	public function removeRange(start:Int, count:Int):Void;
 	public function tryRemove(value:T):Bool;
 	public function removeWhere(func:T->Bool):Void;
 	public function forEach(func:T->Void):Void;
@@ -34,7 +36,11 @@ extern class Observable<T> {
 	
 	public function toString():String;
 
+	private function onValueChanged(module:Dynamic, value:T->Void):Void;
+
+	public inline function onChange(value:T->Void):Void onValueChanged(untyped module, value);
+
 	public static inline function E<T>():Observable<T> return new Observable();
-	public static inline function V(values:Rest<Dynamic>):Observable<Dynamic> return new Observable(values);
-	
+	public static inline function V<T>(value:T):Observable<T> return new Observable(value);
+
 }
