@@ -8,8 +8,10 @@
     <Font File="fonts/NotoSansUI-Bold.ttf" ux:Global="BoldUIFont" />
 
     <Text Font="materialIcon" ux:Class="Icon" Color="#fff" />
-    <Text Font="{ReadProperty Bold} ? BoldFont : RegularFont" ux:Class="C" FontSize="24" Color="#606060">
+    <Text Font="{ReadProperty Bold} ? BoldFont : RegularFont" ux:Class="C" Value="{ReadProperty Char}" FontSize="24" Margin="{ReadProperty Char} == ' ' ? 10 : 0,0,0,0" Color="#606060">
+        <string ux:Property="Char" />
         <bool ux:Property="Bold" />
+        <bool ux:Property="Space" />
         <Shear DegreesX="-10" />
     </Text>
 
@@ -87,7 +89,7 @@
                                     <Text Value="{word}" Alignment="Center" Font="RegularFont" FontSize="40" Margin="0, 62, 0, 0" Color="#303030" />
                                     <StackPanel Orientation="Horizontal" ContentAlignment="HorizontalCenter">
                                         <Each Items="{scripts}">
-                                            <C Value="{c}" Bold="{b}" />
+                                            <C Char="{c}" Bold="{b}"/>
                                         </Each>
                                     </StackPanel>
                                     <Text Value="{translation}" Alignment="Center" Font="BoldFont" FontSize="24" Color="#606060" Margin="0, 40, 0, 0" />
