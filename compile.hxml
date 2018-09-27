@@ -1,0 +1,6 @@
+-cp src
+-lib fusetools
+-D analyzer-optimize
+-main App
+-js scripts/app.js
+-cmd reload.exe

@@ -1,0 +1,17 @@
+{
+  "RootNamespace":"",
+  "Packages": [
+    "Fuse",
+    "FuseJS"
+  ],
+  "Includes": [
+    "*"
+  ],
+  "Mobile": {
+	"Orientations": "Portrait"
+  },
+  "Android": {
+    "Package": "nihongo.cards.app",
+    "PreviewPackage": "nihongo.cards.app.preview"
+  }
+}

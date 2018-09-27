@@ -1,0 +1,111 @@
+<App>
+    <Android.StatusBarConfig Color="#000" IsVisible="True" />
+
+    <Font File="fonts/MaterialIcons-Regular.ttf" ux:Global="materialIcon" />
+    <Font File="fonts/NotoSansCJKjp-Regular.otf" ux:Global="RegularFont" />
+    <Font File="fonts/NotoSansCJKjp-Bold.otf" ux:Global="BoldFont" />
+    <Font File="fonts/NotoSansUI-Regular.ttf" ux:Global="RegularUIFont" />
+    <Font File="fonts/NotoSansUI-Bold.ttf" ux:Global="BoldUIFont" />
+
+    <Text Font="materialIcon" ux:Class="Icon" Color="#fff" />
+    <Text Font="{ReadProperty Bold} ? BoldFont : RegularFont" ux:Class="C" FontSize="24" Color="#606060">
+        <bool ux:Property="Bold" />
+        <Shear DegreesX="-10" />
+    </Text>
+
+    <JavaScript File="scripts/app.js" />
+
+    <DropShadow ux:Class="Shadow" Size="12" Distance="4" Color="#606060" />
+
+    <DockPanel ux:Class="Header" Dock="Top" Height="56" Padding="0, 0" Color="#6C8DAC">
+        <bool ux:Property="Buttons" />
+        <string ux:Property="Text" />
+        <Text ux:Name="Header" Value="{ReadProperty Text}" Margin="{ReadProperty Buttons} ? 72 : 16,0,0,0" Alignment="CenterLeft" Font="RegularUIFont" FontSize="20" TextColor="#fff" />
+        <DropShadow />
+    </DockPanel>
+
+    <Panel ux:Class="Category" Height="60">
+        <string ux:Property="Text" />
+        <int ux:Property="Count" />
+        <Grid Padding="16, 0, 0, 0" Columns="1*,1,80">
+            <Text Value="{ReadProperty Text}" Alignment="CenterLeft" Font="RegularUIFont" FontSize="16" />
+            <Panel Padding="0, 8, 0, 8">
+                <Rectangle Width="1" Alignment="Right" Color="#D9D9D9" />
+            </Panel>
+            <Text Value="{ReadProperty Count}" Alignment="Center" Font="BoldUIFont" FontSize="22" Width="50" TextAlignment="Center" />
+        </Grid>
+        <Rectangle Color="#F1F4F5" CornerRadius="4" />
+    </Panel>
+
+    <Button ux:Class="IconButton" Height="100%">
+        <string ux:Property="Icon" />
+        <Rectangle>
+            <Icon FontSize="24" Alignment="Center" Margin="16,0">{ReadProperty Icon}</Icon>
+        </Rectangle>
+    </Button>
+
+    <ClientPanel>
+
+        <DockPanel>
+
+            <PageControl ux:Name="Pages" IsRouterOutlet="false" Interaction="None">
+                <StackPanel Color="#D9DCDD" ux:Name="List">
+                    <WhileActive>
+                        <Set Cards.ActiveIndex="0" />
+                        <Callback Handler="{clearCards}" />
+                    </WhileActive>
+                    <Header Text="Категории" />
+                    <StackPanel Padding="8" ItemSpacing="8">
+                        <Each Items="{Read lists}">
+                            <Category Text="{name}" Count="{count}">
+                                <Clicked>
+                                    <Callback Handler="{listSelected}" />
+                                    <Set Pages.Active="Card" />
+                                </Clicked>
+                            </Category>
+                        </Each>
+                        <Shadow Size="12" Distance="2" Spread="0.005" />
+                    </StackPanel>
+                </StackPanel>
+                <DockPanel Color="#D9DCDD" ux:Name="Card">
+                    <Header Text="{categoryName}" Buttons="true">
+                        <DockPanel>
+                            <IconButton Alignment="CenterLeft" Icon="">
+                                <Clicked>
+                                    <Set Pages.Active="List" />
+                                </Clicked>
+                            </IconButton>
+                            <IconButton Alignment="CenterRight" Icon="" Visibility="{ReadProperty Cards.ActiveIndex} &gt; 0 ? Visible : Hidden">
+                                <Clicked>
+                                    <Set Cards.ActiveIndex="0" />
+                                </Clicked>
+                            </IconButton>
+                        </DockPanel>
+                    </Header>
+                    <PageControl ux:Name="Cards" Padding="8" InactiveState="Collapsed">
+                        <NavigationMotion GotoType="SmoothSnap" GotoDuration=".1" />
+                        <Each Items="{Read cards}">
+                            <Page>
+                                <StackPanel Alignment="Center">
+                                    <Text Value="{kanji}" Alignment="Center" Font="RegularFont" FontSize="52" Color="#303030" />
+                                    <Text Value="{word}" Alignment="Center" Font="RegularFont" FontSize="40" Margin="0, 62, 0, 0" Color="#303030" />
+                                    <StackPanel Orientation="Horizontal" ContentAlignment="HorizontalCenter">
+                                        <Each Items="{scripts}">
+                                            <C Value="{c}" Bold="{b}" />
+                                        </Each>
+                                    </StackPanel>
+                                    <Text Value="{translation}" Alignment="Center" Font="BoldFont" FontSize="24" Color="#606060" Margin="0, 40, 0, 0" />
+                                </StackPanel>
+                                <Rectangle Color="#F1F4F5" CornerRadius="8">
+                                    <Shadow />
+                                </Rectangle>
+                            </Page>
+                        </Each>
+                    </PageControl>
+                </DockPanel>
+            </PageControl>
+
+        </DockPanel>
+
+    </ClientPanel>
+</App>
