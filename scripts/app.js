@@ -7,6 +7,7 @@ var App = function() {
 	this.cards = Observable();
 	this.lists = Observable();
 	var listsData = [{ name : "Животные", cards : [{ kanji : "猫", word : "ねこ", script : "n!eko", scripts : [], translation : "Cat"},{ kanji : "犬", word : "犬", script : "!inu", scripts : [], translation : "Dog"},{ kanji : "猿", word : "サル", script : "s!aru", scripts : [], translation : "Monkey"}], count : 0},{ name : "Больше Животных", cards : [{ kanji : "猫", word : "ねこ", script : "n!eko", scripts : [], translation : "Cat"},{ kanji : "犬", word : "犬", script : "!inu", scripts : [], translation : "Dog"},{ kanji : "猿", word : "サル", script : "s!aru", scripts : [], translation : "Monkey"},{ kanji : "猫", word : "ねこ", script : "n!eko", scripts : [], translation : "Cat"},{ kanji : "犬", word : "犬", script : "!inu", scripts : [], translation : "Dog"},{ kanji : "猿", word : "サル", script : "s!aru", scripts : [], translation : "Monkey"}], count : 0}];
+	console.log("src/App.hx:40:","Hey!!!");
 	var b = false;
 	var c;
 	var _g = 0;
