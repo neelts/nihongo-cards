@@ -19,14 +19,14 @@
 
     <DropShadow ux:Class="Shadow" Size="12" Distance="4" Color="#606060" />
 
-    <DockPanel ux:Class="Header" Dock="Top" Height="56" Padding="0, 0" Color="#6C8DAC">
+    <DockPanel ux:Class="Header" Dock="Top" Height="56" Padding="6, 0" Color="#6C8DAC">
         <bool ux:Property="Buttons" />
         <string ux:Property="Text" />
         <Text ux:Name="Header" Value="{ReadProperty Text}" Margin="{ReadProperty Buttons} ? 72 : 16,0,0,0" Alignment="CenterLeft" FontSize="20" TextColor="#fff" />
         <DropShadow />
     </DockPanel>
 
-    <Panel ux:Class="Category" Height="60" Margin="0, 0, 0, 0">
+    <Button ux:Class="Category" Height="60">
         <string ux:Property="Text" />
         <int ux:Property="Count" />
         <Grid Padding="16, 0, 0, 0" Columns="1*,1,80">
@@ -37,12 +37,12 @@
             <Text Value="{ReadProperty Count}" Alignment="Center" Font="BoldUIFont" FontSize="22" Width="50" TextAlignment="Center" />
         </Grid>
         <Rectangle Color="#F1F4F5" CornerRadius="4" />
-    </Panel>
+    </Button>
 
     <Button ux:Class="IconButton" Height="100%">
         <string ux:Property="Icon" />
         <Rectangle>
-            <Icon FontSize="24" Alignment="Center" Margin="16,0">{ReadProperty Icon}</Icon>
+            <Icon FontSize="24" Alignment="Center" Margin="10,0">{ReadProperty Icon}</Icon>
         </Rectangle>
     </Button>
 
@@ -50,8 +50,11 @@
 
         <DockPanel>
 
-            <PageControl ux:Name="Pages" IsRouterOutlet="false" Interaction="None" Navigated="{pageChanged}">
+            <PageControl ux:Name="Pages" IsRouterOutlet="false" Interaction="None" Navigated="{pageChanged}" InactiveState="Disabled">
                 <DockPanel Color="#D9DCDD" ux:Name="List">
+                    <WhileEnabled>
+                        <Change Exit.Value="true"/>
+                    </WhileEnabled>
                     <Header Text="Categories" />
                     <ScrollView Padding="8">
                         <StackPanel ItemSpacing="8">
@@ -59,13 +62,18 @@
                                 <Category Text="{name}" Count="{count}">
                                     <Clicked>
                                         <Callback Handler="{listSelected}" />
-                                        <Set Pages.Active="Card" Delay=".1" />
+                                        <Set Pages.Active="Card" Delay=".2" />
                                     </Clicked>
                                 </Category>
                             </Each>
                             <Shadow Size="12" Distance="2" Spread="0.005" />
                         </StackPanel>
                     </ScrollView>
+                    <OnBackButton>
+                        <WhileTrue ux:Name="Exit" Bypass="Never">
+                            <HomeScreen Type="CallIntent" />
+                        </WhileTrue>
+                    </OnBackButton>
                 </DockPanel>
                 <DockPanel Color="#D9DCDD" ux:Name="Card">
                     <Header Text="{categoryName}" Buttons="true">
@@ -75,33 +83,45 @@
                                     <Set Pages.Active="List" />
                                 </Clicked>
                             </IconButton>
-                            <IconButton Alignment="CenterRight" Icon="" Visibility="{ReadProperty Cards.ActiveIndex} &gt; 0 ? Visible : Hidden">
-                                <Clicked>
-                                    <Callback Handler="{resetCards}" />
-                                </Clicked>
-                            </IconButton>
+                            <StackPanel Orientation="Horizontal" Alignment="Right" >
+                                <IconButton Icon="" Visibility="{ReadProperty Cards.ActiveIndex} &gt; 0 ? Visible : Hidden">
+                                    <Clicked>
+                                        <Callback Handler="{resetCards}" />
+                                    </Clicked>
+                                </IconButton>
+                                <IconButton Icon="&#xe043;">
+                                    <Clicked>
+                                        <Callback Handler="{shuffleCards}" />
+                                    </Clicked>
+                                </IconButton>
+                            </StackPanel>
                         </DockPanel>
                     </Header>
                     <PageControl ux:Name="Cards" Padding="8" InactiveState="Collapsed" Navigated="{cardChanged}" ActiveIndex="{currentPage}" Reuse="Inactive">
                         <NavigationMotion GotoType="SmoothSnap" GotoDuration=".1" GotoDistance="1" />
                         <Each Items="{Read cards}">
-                            <Page Name="{id}">
-                                <StackPanel Alignment="Center">
-                                    <Text Value="{kanji}" Alignment="Center" Font="RegularFont" FontSize="52" Color="#303030" />
-                                    <Text Value="{word}" Alignment="Center" Font="RegularFont" FontSize="40" Margin="0, 62, 0, 0" Color="#303030" />
-                                    <StackPanel Orientation="Horizontal" ContentAlignment="HorizontalCenter">
-                                        <Each Items="{scripts}">
-                                            <C Char="{c}" Bold="{b}" />
-                                        </Each>
+                            <Deferred>
+                                <Page Name="{id}">
+                                    <StackPanel Alignment="Center">
+                                        <Text Value="{kanji}" Alignment="Center" Font="RegularFont" FontSize="52" Color="#303030" />
+                                        <Text Value="{word}" Alignment="Center" Font="RegularFont" FontSize="40" Margin="0, 62, 0, 0" Color="#303030" />
+                                        <StackPanel Orientation="Horizontal" ContentAlignment="HorizontalCenter">
+                                            <Each Items="{scripts}">
+                                                <C Char="{c}" Bold="{b}" />
+                                            </Each>
+                                        </StackPanel>
+                                        <Text Value="{translation}" Alignment="Center" Font="BoldFont" FontSize="24" Color="#606060" Margin="0, 40, 0, 0" />
                                     </StackPanel>
-                                    <Text Value="{translation}" Alignment="Center" Font="BoldFont" FontSize="24" Color="#606060" Margin="0, 40, 0, 0" />
-                                </StackPanel>
-                                <Rectangle Color="#F1F4F5" CornerRadius="8">
-                                    <Shadow />
-                                </Rectangle>
-                            </Page>
+                                    <Rectangle Color="#F1F4F5" CornerRadius="8">
+                                        <Shadow />
+                                    </Rectangle>
+                                </Page>
+                            </Deferred>
                         </Each>
                     </PageControl>
+                    <OnBackButton>
+                        <Set Pages.Active="List" />
+                    </OnBackButton>
                 </DockPanel>
             </PageControl>
 

@@ -11,6 +11,7 @@ var App = function() {
 	this.listSelected = $bind(this,this.listSelected);
 	this.pageChanged = $bind(this,this.pageChanged);
 	this.cardChanged = $bind(this,this.cardChanged);
+	this.shuffleCards = $bind(this,this.shuffleCards);
 	this.resetCards = $bind(this,this.resetCards);
 };
 App.__interfaces__ = [UXExport];
@@ -80,9 +81,19 @@ App.prototype = {
 			var index = this.currentPage.value + 1;
 			if(index < this.cardsData.length && index >= this.cards.length) {
 				this.cards.add(this.cardsData[index]);
-				console.log("src/App.hx:73:","add " + index);
 			}
 		}
+	}
+	,shuffleCards: function(_) {
+		var shuffled = [];
+		var _g1 = 0;
+		var _g = this.cardsData.length;
+		while(_g1 < _g) {
+			++_g1;
+			shuffled.push(this.cardsData[Math.floor(this.cardsData.length * Math.random())]);
+		}
+		this.cardsData = shuffled;
+		this.resetCards();
 	}
 	,resetCards: function(_) {
 		this.cards.clear();

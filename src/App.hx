@@ -68,14 +68,18 @@ class App implements UXExport {
 	public function cardChanged(p:Page) {
 		if (cardsData != null) {
 			var index = currentPage.value + 1;
-			if (index < cardsData.length && index >= cards.length) {
-				cards.add(cardsData[index]);
-				trace('add $index');
-			}
+			if (index < cardsData.length && index >= cards.length) cards.add(cardsData[index]);
 		}
 	}
 
-	public function resetCards(_) {
+	public function shuffleCards(_) {
+		var shuffled = [];
+		for (i in 0...cardsData.length) shuffled.push(cardsData[Math.floor(cardsData.length * Math.random())]);
+		cardsData = shuffled;
+		resetCards();
+	}
+
+	public function resetCards(?_) {
 		cards.clear();
 		cards.add(cardsData[0]);
 		currentPage.value = 0;
