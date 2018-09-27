@@ -6,36 +6,35 @@ var App = function() {
 	this.categoryName = Observable();
 	this.cards = Observable();
 	this.lists = Observable();
-	var listsData = [{ name : "Животные", cards : [{ kanji : "猫", word : "ねこ", script : "n!eko", scripts : [], translation : "Cat"},{ kanji : "犬", word : "犬", script : "!inu", scripts : [], translation : "Dog"},{ kanji : "猿", word : "サル", script : "s!aru", scripts : [], translation : "Monkey"}], count : 0},{ name : "Больше Животных", cards : [{ kanji : "猫", word : "ねこ", script : "n!eko", scripts : [], translation : "Cat"},{ kanji : "犬", word : "犬", script : "!inu", scripts : [], translation : "Dog"},{ kanji : "猿", word : "サル", script : "s!aru", scripts : [], translation : "Monkey"},{ kanji : "猫", word : "ねこ", script : "n!eko", scripts : [], translation : "Cat"},{ kanji : "犬", word : "犬", script : "!inu", scripts : [], translation : "Dog"},{ kanji : "猿", word : "サル", script : "s!aru", scripts : [], translation : "Monkey"}], count : 0}];
-	console.log("src/App.hx:40:","Hey!!!");
-	var b = false;
-	var c;
+	var listsData = [];
+	var files = ["Animals"];
 	var _g = 0;
-	while(_g < listsData.length) {
-		var list = listsData[_g];
+	while(_g < files.length) {
+		var file = files[_g];
 		++_g;
-		var _g1 = 0;
-		var _g2 = list.cards;
-		while(_g1 < _g2.length) {
-			var card = _g2[_g1];
-			++_g1;
-			var _g4 = 0;
-			var _g3 = card.script.length;
-			while(_g4 < _g3) {
-				c = card.script.charAt(_g4++);
-				if(c == "!") {
-					b = true;
-				} else {
-					card.scripts.push({ c : c, b : b});
-					if(b) {
-						b = false;
+		var data = Bundle.readSync("data/" + file + ".csv");
+		if(data != null) {
+			var lines = data.split("\n");
+			var cards = [];
+			var _g1 = 0;
+			while(_g1 < lines.length) {
+				var values = lines[_g1++].split(",");
+				var script = values[2];
+				var scripts = [];
+				var _g3 = 0;
+				var _g2 = script.length;
+				while(_g3 < _g2) {
+					var c = script.charAt(_g3++);
+					if(c != "!") {
+						scripts.push({ c : c, b : false});
 					}
 				}
+				cards.push({ kanji : values[0], word : values[1], scripts : scripts, translation : values[3]});
 			}
+			listsData.push({ name : file, cards : cards, count : lines.length});
 		}
-		list.count = list.cards.length;
-		this.lists.add(list);
 	}
+	this.lists.addAll(listsData);
 	this.listSelected = $bind(this,this.listSelected);
 	this.clearCards = $bind(this,this.clearCards);
 };
@@ -53,6 +52,7 @@ App.prototype = {
 		this.cards.clear();
 	}
 };
+var Bundle = require("FuseJS/Bundle");
 var Fuse = function() { };
 var Observable = require("FuseJS/Observable");
 var $_, $fid = 0;

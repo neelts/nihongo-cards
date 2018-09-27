@@ -1,5 +1,5 @@
 -cp src
--lib fusetools
+-cp lib
 -D analyzer-optimize
 -main App
 -js scripts/app.js
