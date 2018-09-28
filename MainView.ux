@@ -26,15 +26,20 @@
         <DropShadow Distance="1" Size="1" />
     </DockPanel>
 
-    <Button ux:Class="Category" Height="56">
+    <Button ux:Class="Category" Height="56" ClipToBounds="true">
         <string ux:Property="Text" />
         <int ux:Property="Count" />
         <DockPanel Padding="16,0,16,0">
             <Text Value="{ReadProperty Text}" Alignment="CenterLeft" Font="RegularUIFont" FontSize="16" />
             <Text Value="{ReadProperty Count}" Alignment="CenterRight" Font="BoldUIFont" FontSize="18" TextAlignment="Right" />
         </DockPanel>
+        <WhilePressed ux:Name="Pressed">
+            <Circle ux:Name="Circle" Color="#000000" Opacity="0" Size="10, 10" Anchor="50%, 50%" Position="{ReadProperty Pressed.PressedPosition}" />
+            <Change Circle.Size="{width} * 2" Duration=".2" />
+            <Change Circle.Opacity="0.16" Duration=".1" />
+        </WhilePressed>
         <Rectangle Color="#000000" Opacity=".12" Height="1" Padding="0, 0, 0, 0" Alignment="Bottom" Margin="16, 0, 16, 0" />
-        <Rectangle Color="#F1F4F5" />
+        <Rectangle ux:Name="Area" Color="#F1F4F5" />
     </Button>
 
     <Button ux:Class="IconButton" Height="100%">
@@ -42,11 +47,15 @@
         <Rectangle>
             <Icon FontSize="24" Alignment="Center" Margin="10,0">{ReadProperty Icon}</Icon>
         </Rectangle>
+        <WhilePressed ux:Name="Pressed">
+            <Circle ux:Name="Circle" Color="#000000" Size="32" Opacity="0"/>
+            <Change Circle.Opacity="0.16" Duration=".2" />
+        </WhilePressed>
     </Button>
 
     <ClientPanel>
 
-        <DockPanel>
+        <DockPanel Placed="{getSizes}">
 
             <PageControl ux:Name="Pages" IsRouterOutlet="false" Interaction="None" Navigated="{pageChanged}" InactiveState="Disabled">
                 <DockPanel Color="#D9DCDD" ux:Name="List">
@@ -94,8 +103,8 @@
                             </StackPanel>
                         </DockPanel>
                     </Header>
-                    <PageControl ux:Name="Cards" Padding="8" InactiveState="Collapsed" Navigated="{cardChanged}" ActiveIndex="{currentPage}" Reuse="Inactive">
-                        <NavigationMotion GotoType="SmoothSnap" GotoDuration=".1" GotoDistance="1" />
+                    <PageControl ux:Name="Cards" Padding="8" InactiveState="Collapsed" Navigated="{cardChanged}" ActiveIndex="{currentPage}" Reuse="Inactive" Placed="{getCardsSize}">
+                        <NavigationMotion GotoType="SmoothSnap" GotoDuration=".2" GotoDistance="1" />
                         <Each Items="{Read cards}">
                             <Deferred>
                                 <Page Name="{id}">
@@ -107,7 +116,7 @@
                                                 <C Char="{c}" Bold="{b}" />
                                             </Each>
                                         </StackPanel>
-                                        <Text Value="{translation}" Alignment="Center" Font="BoldFont" FontSize="24" Color="#606060" Margin="0, 40, 0, 0" />
+                                        <Text Value="{translation}" Alignment="Center" Font="BoldFont" FontSize="24" Color="#606060" Margin="16, 40, 16, 0" TextWrapping="Wrap" TextAlignment="Center" />
                                     </StackPanel>
                                     <Rectangle Color="#F1F4F5" CornerRadius="8">
                                         <Shadow />
@@ -115,6 +124,7 @@
                                 </Page>
                             </Deferred>
                         </Each>
+                        <Clicked Handler="{swipePage}"/>
                     </PageControl>
                     <OnBackButton>
                         <Set Pages.Active="List" />

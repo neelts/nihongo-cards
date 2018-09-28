@@ -1,5 +1,7 @@
 package ;
 
+import Fuse.Placed;
+import Fuse.Click;
 import haxe.Timer;
 import Fuse.Event;
 import haxe.Json;
@@ -12,6 +14,9 @@ using Std;
 
 class App implements UXExport {
 
+	public var width = V(0);
+	public var height = V(0);
+
 	public var lists:Observable<List> = E();
 	public var cards:Observable<Card> = E();
 
@@ -19,29 +24,35 @@ class App implements UXExport {
 
 	public var currentPage = V(0);
 
+	private var cardsCenter:Float;
 	private var cardsData:Array<Card>;
+
+	private var busy:Bool;
 
 	public function new() {
 		Bundle.list().then(initList);
+		currentPage.onChange(onPageChanging);
 	}
 
 	private function initList(files:Array<String>) {
-		for (file in files) if (file.substr(-3) == 'csv') {
+		for (file in files) if (file.substr(-3) == 'tsv') {
 			file.read().then((data) -> {
 				if (data != null) {
 					var lines = data.split('\n');
 					var cards:Array<Card> = [];
 					var id = 0;
 					for (line in lines) {
-						var values = line.split(',');
+						var values = line.split('\t');
 						var script = values[2];
 						var scripts = [];
 						var b = false;
-						for (i in 0...script.length) {
-							var c = script.charAt(i);
-							if (c == '!') b = true else {
-								scripts.push({ c:c, b:b });
-								if (b) b = false;
+						if (script != null) {
+							for (i in 0...script.length) {
+								var c = script.charAt(i);
+								if (c == '!') b = true else {
+									scripts.push({ c:c, b:b });
+									if (b) b = false;
+								}
 							}
 						}
 						cards.push({ id:id++, kanji: values[0], word: values[1], scripts: scripts, translation: values[3] });
@@ -50,6 +61,15 @@ class App implements UXExport {
 				}
 			});
 		};
+	}
+
+	private function onPageChanging(value:Int) {
+		busy = true;
+	}
+
+	public function getSizes(e:Placed) {
+		width.value = e.width;
+		height.value = e.height;
 	}
 
 	public function listSelected(e:Event<List>) {
@@ -65,10 +85,25 @@ class App implements UXExport {
 		if (p.name == "List") cards.clear();
 	}
 
-	public function cardChanged(p:Page) {
+	public function cardChanged(?_) {
 		if (cardsData != null) {
 			var index = currentPage.value + 1;
 			if (index < cardsData.length && index >= cards.length) cards.add(cardsData[index]);
+		}
+		busy = false;
+	}
+
+	public function getCardsSize(e:Placed) {
+		trace(Json.stringify(e));
+		cardsCenter = e.width * .5;
+	}
+
+	public function swipePage(e:Click) {
+		if (!busy) {
+			var right = e.x > cardsCenter;
+			if ((right && currentPage.value < cardsData.length) || (!right && currentPage.value > 0)) {
+				currentPage.value += right ? 1 : -1;
+			}
 		}
 	}
 

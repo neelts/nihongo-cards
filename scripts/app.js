@@ -7,10 +7,16 @@ var App = function() {
 	this.categoryName = Observable();
 	this.cards = Observable();
 	this.lists = Observable();
+	this.height = Observable(0);
+	this.width = Observable(0);
 	Bundle.list().then($bind(this,this.initList));
+	this.currentPage.onValueChanged(module,$bind(this,this.onPageChanging));
+	this.getSizes = $bind(this,this.getSizes);
 	this.listSelected = $bind(this,this.listSelected);
 	this.pageChanged = $bind(this,this.pageChanged);
 	this.cardChanged = $bind(this,this.cardChanged);
+	this.getCardsSize = $bind(this,this.getCardsSize);
+	this.swipePage = $bind(this,this.swipePage);
 	this.shuffleCards = $bind(this,this.shuffleCards);
 	this.resetCards = $bind(this,this.resetCards);
 };
@@ -25,7 +31,7 @@ App.prototype = {
 		while(_g < files.length) {
 			var file = [files[_g]];
 			++_g;
-			if(HxOverrides.substr(file[0],-3,null) == "csv") {
+			if(HxOverrides.substr(file[0],-3,null) == "tsv") {
 				Bundle.read(file[0]).then((function(file1) {
 					return function(data) {
 						if(data != null) {
@@ -34,20 +40,22 @@ App.prototype = {
 							var id = 0;
 							var _g1 = 0;
 							while(_g1 < lines.length) {
-								var values = lines[_g1++].split(",");
+								var values = lines[_g1++].split("\t");
 								var script = values[2];
 								var scripts = [];
 								var b = false;
-								var _g3 = 0;
-								var _g2 = script.length;
-								while(_g3 < _g2) {
-									var c = script.charAt(_g3++);
-									if(c == "!") {
-										b = true;
-									} else {
-										scripts.push({ c : c, b : b});
-										if(b) {
-											b = false;
+								if(script != null) {
+									var _g3 = 0;
+									var _g2 = script.length;
+									while(_g3 < _g2) {
+										var c = script.charAt(_g3++);
+										if(c == "!") {
+											b = true;
+										} else {
+											scripts.push({ c : c, b : b});
+											if(b) {
+												b = false;
+											}
 										}
 									}
 								}
@@ -60,6 +68,13 @@ App.prototype = {
 				})(file));
 			}
 		}
+	}
+	,onPageChanging: function(value) {
+		this.busy = true;
+	}
+	,getSizes: function(e) {
+		this.width.value = e.width;
+		this.height.value = e.height;
 	}
 	,listSelected: function(e) {
 		if(this.cards.length > 0) {
@@ -76,11 +91,24 @@ App.prototype = {
 			this.cards.clear();
 		}
 	}
-	,cardChanged: function(p) {
+	,cardChanged: function(_) {
 		if(this.cardsData != null) {
 			var index = this.currentPage.value + 1;
 			if(index < this.cardsData.length && index >= this.cards.length) {
 				this.cards.add(this.cardsData[index]);
+			}
+		}
+		this.busy = false;
+	}
+	,getCardsSize: function(e) {
+		console.log("src/App.hx:97:",JSON.stringify(e));
+		this.cardsCenter = e.width * .5;
+	}
+	,swipePage: function(e) {
+		if(!this.busy) {
+			var right = e.x > this.cardsCenter;
+			if(right && this.currentPage.value < this.cardsData.length || !right && this.currentPage.value > 0) {
+				this.currentPage.value += right ? 1 : -1;
 			}
 		}
 	}

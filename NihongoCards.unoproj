@@ -7,7 +7,7 @@
   "Includes": [
     "*",
     "HomeScreen.uno:Source",
-    "data/*.csv:Bundle"
+    "data/*.tsv:Bundle"
   ],
   "Mobile": {
 	"Orientations": "Portrait"
