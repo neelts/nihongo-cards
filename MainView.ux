@@ -103,7 +103,7 @@
                             </StackPanel>
                         </DockPanel>
                     </Header>
-                    <PageControl ux:Name="Cards" Padding="8" InactiveState="Collapsed" Navigated="{cardChanged}" ActiveIndex="{currentPage}" Reuse="Inactive" Placed="{getCardsSize}">
+                    <PageControl ux:Name="Cards" Padding="8" InactiveState="Collapsed" Navigated="{cardChanged}" ActiveIndex="{currentPage}" Placed="{getCardsSize}">
                         <NavigationMotion GotoType="SmoothSnap" GotoDuration=".2" GotoDistance="1" />
                         <Each Items="{Read cards}">
                             <Deferred>

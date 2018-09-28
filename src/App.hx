@@ -28,6 +28,7 @@ class App implements UXExport {
 	private var cardsData:Array<Card>;
 
 	private var busy:Bool;
+	private var expect:Int = -1;
 
 	public function new() {
 		Bundle.list().then(initList);
@@ -65,6 +66,7 @@ class App implements UXExport {
 
 	private function onPageChanging(value:Int) {
 		busy = true;
+		trace('>>> onPageChanging ' + value + ' ' + currentPage.value);
 	}
 
 	public function getSizes(e:Placed) {
@@ -86,15 +88,19 @@ class App implements UXExport {
 	}
 
 	public function cardChanged(?_) {
-		if (cardsData != null) {
+		trace('>>> cardChanged ' + currentPage.value);
+		if (cardsData != null && (expect == -1 || expect == currentPage.value)) {
 			var index = currentPage.value + 1;
-			if (index < cardsData.length && index >= cards.length) cards.add(cardsData[index]);
+			if (index < cardsData.length && index >= cards.length) {
+				trace(index, cardsData[index].translation);
+				cards.add(cardsData[index]);
+			}
 		}
+		if (expect >= 0) expect = -1;
 		busy = false;
 	}
 
 	public function getCardsSize(e:Placed) {
-		trace(Json.stringify(e));
 		cardsCenter = e.width * .5;
 	}
 
@@ -109,15 +115,17 @@ class App implements UXExport {
 
 	public function shuffleCards(_) {
 		var shuffled = [];
-		for (i in 0...cardsData.length) shuffled.push(cardsData[Math.floor(cardsData.length * Math.random())]);
+		for (card in cardsData) shuffled.insert(Math.floor(shuffled.length * Math.random()), card);
 		cardsData = shuffled;
 		resetCards();
 	}
 
 	public function resetCards(?_) {
+		expect = 0;
 		cards.clear();
 		cards.add(cardsData[0]);
 		currentPage.value = 0;
+		trace('>>> resetCards');
 	}
 
 	public static inline function main() {
