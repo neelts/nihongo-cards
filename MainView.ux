@@ -1,5 +1,5 @@
 <App>
-    <Android.StatusBarConfig Color="#000" IsVisible="True" />
+    <Android.StatusBarConfig Color="#4F6880" IsVisible="True" />
 
     <Font File="fonts/MaterialIcons-Regular.ttf" ux:Global="materialIcon" />
     <Font File="fonts/NotoSansCJKjp-Regular.otf" ux:Global="RegularFont" />
@@ -23,20 +23,18 @@
         <bool ux:Property="Buttons" />
         <string ux:Property="Text" />
         <Text ux:Name="Header" Value="{ReadProperty Text}" Margin="{ReadProperty Buttons} ? 72 : 16,0,0,0" Alignment="CenterLeft" FontSize="20" TextColor="#fff" />
-        <DropShadow />
+        <DropShadow Distance="1" Size="1" />
     </DockPanel>
 
-    <Button ux:Class="Category" Height="60">
+    <Button ux:Class="Category" Height="56">
         <string ux:Property="Text" />
         <int ux:Property="Count" />
-        <Grid Padding="16, 0, 0, 0" Columns="1*,1,80">
+        <DockPanel Padding="16,0,16,0">
             <Text Value="{ReadProperty Text}" Alignment="CenterLeft" Font="RegularUIFont" FontSize="16" />
-            <Panel Padding="0, 8, 0, 8">
-                <Rectangle Width="1" Alignment="Right" Color="#D9D9D9" />
-            </Panel>
-            <Text Value="{ReadProperty Count}" Alignment="Center" Font="BoldUIFont" FontSize="22" Width="50" TextAlignment="Center" />
-        </Grid>
-        <Rectangle Color="#F1F4F5" CornerRadius="4" />
+            <Text Value="{ReadProperty Count}" Alignment="CenterRight" Font="BoldUIFont" FontSize="18" TextAlignment="Right" />
+        </DockPanel>
+        <Rectangle Color="#000000" Opacity=".12" Height="1" Padding="0, 0, 0, 0" Alignment="Bottom" Margin="16, 0, 16, 0" />
+        <Rectangle Color="#F1F4F5" />
     </Button>
 
     <Button ux:Class="IconButton" Height="100%">
@@ -53,11 +51,11 @@
             <PageControl ux:Name="Pages" IsRouterOutlet="false" Interaction="None" Navigated="{pageChanged}" InactiveState="Disabled">
                 <DockPanel Color="#D9DCDD" ux:Name="List">
                     <WhileEnabled>
-                        <Change Exit.Value="true"/>
+                        <Change Exit.Value="true" />
                     </WhileEnabled>
                     <Header Text="Categories" />
-                    <ScrollView Padding="8">
-                        <StackPanel ItemSpacing="8">
+                    <ScrollView>
+                        <StackPanel>
                             <Each Items="{Read lists}">
                                 <Category Text="{name}" Count="{count}">
                                     <Clicked>
@@ -66,7 +64,6 @@
                                     </Clicked>
                                 </Category>
                             </Each>
-                            <Shadow Size="12" Distance="2" Spread="0.005" />
                         </StackPanel>
                     </ScrollView>
                     <OnBackButton>
@@ -83,13 +80,13 @@
                                     <Set Pages.Active="List" />
                                 </Clicked>
                             </IconButton>
-                            <StackPanel Orientation="Horizontal" Alignment="Right" >
+                            <StackPanel Orientation="Horizontal" Alignment="Right">
                                 <IconButton Icon="" Visibility="{ReadProperty Cards.ActiveIndex} &gt; 0 ? Visible : Hidden">
                                     <Clicked>
                                         <Callback Handler="{resetCards}" />
                                     </Clicked>
                                 </IconButton>
-                                <IconButton Icon="&#xe043;">
+                                <IconButton Icon="">
                                     <Clicked>
                                         <Callback Handler="{shuffleCards}" />
                                     </Clicked>
